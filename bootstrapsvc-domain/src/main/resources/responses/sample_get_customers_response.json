@@ -1,0 +1,23 @@
+{
+	"customers": [
+		{
+			"customerName": "Jason Bourne",
+			"phoneNumber": 1234567890,
+			"emailId": "Jason.Bourne@ebay.com",
+			"segment": "buyer"
+		},
+		{
+			"customerName": "James Bond",
+			"phoneNumber": 9876543210,
+			"emailId": "James.Bond@ebay.com",
+			"segment": "seller"
+		}
+	],
+	"metadata": {
+		"pagination": {
+			"limit": 10,
+			"offset": 0,
+			"hasMore": false
+		}
+	}
+}

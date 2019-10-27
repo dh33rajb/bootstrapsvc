@@ -1,0 +1,9 @@
+{
+	"customer": {
+		"customerId": 1111,
+		"customerName": "Jason Bourne",
+		"phoneNumber": 1234567890,
+		"emailId": "Jason.Bourne@ebay.com",
+		"segment": "buyer"
+	}
+}

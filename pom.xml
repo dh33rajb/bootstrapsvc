@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.4.RELEASE</version>
+	</parent>
+
+	<groupId>com.djworks</groupId>
+	<artifactId>bootstrapsvc-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>bootstrapsvc</name>
+	<description>A bootstrap service on Spring Boot</description>
+
+	<modules>
+		<module>bootstrapsvc-api-models</module>
+		<module>bootstrapsvc-api</module>
+		<module>bootstrapsvc-domain</module>
+		<module>bootstrapsvc-domain-models</module>
+	</modules>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<!-- Maven Central Repo. -->
+	<repositories>
+		<repository>
+			<id>maven-central</id>
+			<url>https://repo1.maven.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-central</id>
+			<url>https://repo1.maven.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.djworks</groupId>
+				<artifactId>bootstrapsvc-api-models</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.djworks</groupId>
+				<artifactId>bootstrapsvc-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.djworks</groupId>
+				<artifactId>bootstrapsvc-domain-models</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.djworks</groupId>
+				<artifactId>bootstrapsvc-domain</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>28.1-jre</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.9</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2.2</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>
