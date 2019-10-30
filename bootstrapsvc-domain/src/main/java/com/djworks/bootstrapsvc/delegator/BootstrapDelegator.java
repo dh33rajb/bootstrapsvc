@@ -10,6 +10,7 @@ import com.djworks.bootstrapsvc.api.models.response.metadata.BootstrapResponseMe
 import com.djworks.bootstrapsvc.api.models.response.metadata.PaginationMetadata;
 import com.djworks.bootstrapsvc.client.remote.RemoteClient;
 import com.djworks.bootstrapsvc.client.remote.RemoteClientException;
+import com.djworks.bootstrapsvc.domain.models.response.UsersResponse;
 import com.djworks.bootstrapsvc.transformer.CustomerTransformer;
 import com.google.common.collect.Lists;
 
@@ -24,6 +25,10 @@ public class BootstrapDelegator {
 
 	@Autowired
 	private com.djworks.bootstrapsvc.client.transformer.CustomerTransformer remoteCustomerTransformer;
+
+	public UsersResponse getUsers() {
+		return this.remoteClient.getUsers();
+	}
 
 	/**
 	 * Delegates get-customer calls.

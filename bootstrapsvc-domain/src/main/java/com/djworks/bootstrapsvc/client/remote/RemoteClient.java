@@ -14,15 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.djworks.bootstrapsvc.domain.datatype.Customer;
+import com.djworks.bootstrapsvc.domain.models.response.ContactMethodsResponse;
 import com.djworks.bootstrapsvc.domain.models.response.CustomerResponse;
 import com.djworks.bootstrapsvc.domain.models.response.CustomersResponse;
+import com.djworks.bootstrapsvc.domain.models.response.UsersResponse;
 import com.djworks.bootstrapsvc.util.JsonFileReader;
 import com.djworks.bootstrapsvc.util.JsonFileReaderException;
+import com.google.common.collect.Lists;
 
 @Component
 public class RemoteClient {
 
-	private static final int CLIENT_READ_TIMEOUT = 1000;
+	private static final int CLIENT_READ_TIMEOUT = 10000;
 
 	private static final int CLIENT_CONNECT_TIMEOUT = 1000;
 
@@ -36,6 +39,18 @@ public class RemoteClient {
 
 	private WebTarget base;
 
+	// PagerDuty Client Details
+
+	private static final String PD_SERVICE_BASE_URI = "https://api.pagerduty.com/";
+
+	private static final String CONTACT_METHODS_RESOURCE_PATH_FORMAT = "users/%s/contact_methods";
+
+	private static final String USERS_RESOURCE_PATH = "users";
+
+	private static final String PD_AUTH_TOKEN = "Token token=y_NbAkKc66ryYTWUXYEu";
+
+	private static final int MAX_LIMIT = 100;
+
 	@Autowired
 	private JsonFileReader jsonFileReader;
 
@@ -45,7 +60,7 @@ public class RemoteClient {
 	private void initClient() {
 		client = ClientBuilder.newClient().property(ClientProperties.CONNECT_TIMEOUT, CLIENT_CONNECT_TIMEOUT)
 				.property(ClientProperties.READ_TIMEOUT, CLIENT_READ_TIMEOUT);
-		base = client.target(REMOTE_SERVICE_BASE_URI);
+		base = client.target(PD_SERVICE_BASE_URI);
 	}
 
 	@PreDestroy
@@ -53,6 +68,58 @@ public class RemoteClient {
 		if (client != null) {
 			client.close();
 		}
+	}
+
+	/**
+	 * Get Users from PD API.
+	 */
+	public UsersResponse getUsers() {
+		UsersResponse aggregatedUsersResponse = new UsersResponse();
+		aggregatedUsersResponse.setUsers(Lists.newArrayList());
+		UsersResponse users = null;
+		try {
+			boolean hasMore = false;
+			int offset = 0;
+			do {
+				WebTarget details = base.path(USERS_RESOURCE_PATH).queryParam("limit", MAX_LIMIT).queryParam("offset",
+						offset);
+				users = details.request(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION, PD_AUTH_TOKEN)
+						.get(new GenericType<UsersResponse>() {
+						});
+				if (users != null && users.getUsers() != null) {
+					users.getUsers().forEach((user) -> {
+						ContactMethodsResponse contactMethodResponse = getContactMethods(user.getId());
+						if (contactMethodResponse != null) {
+							user.setContactMethods(contactMethodResponse.getContactMethods());
+						}
+					});
+				}
+				aggregatedUsersResponse.getUsers().addAll(users.getUsers());
+				if (users != null) {
+					offset = offset + MAX_LIMIT;
+					hasMore = users.isMore();
+				}
+			} while (hasMore);
+		} catch (Exception e) {
+			throw new RemoteClientException("Error getting data from remote client.", e);
+		}
+		return aggregatedUsersResponse;
+	}
+
+	/**
+	 * Get contact-methods for a user.
+	 */
+	public ContactMethodsResponse getContactMethods(String userId) {
+		ContactMethodsResponse contactMethods = null;
+		try {
+			WebTarget details = base.path(String.format(CONTACT_METHODS_RESOURCE_PATH_FORMAT, userId));
+			contactMethods = details.request(MediaType.APPLICATION_JSON)
+					.header(HttpHeaders.AUTHORIZATION, PD_AUTH_TOKEN).get(new GenericType<ContactMethodsResponse>() {
+					});
+		} catch (Exception e) {
+			throw new RemoteClientException("Error getting data from remote client.", e);
+		}
+		return contactMethods;
 	}
 
 	/**

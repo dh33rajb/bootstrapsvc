@@ -44,6 +44,13 @@ public class BootstrapResource {
 		return Response.ok("Hello from bootstrap service!").build();
 	}
 
+	@GET
+	@Path("/users")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getUsers() {
+		return Response.status(Status.OK).entity(this.bootstrapDelegator.getUsers()).build();
+	}
+
 	/**
 	 * Get customers API.
 	 */
